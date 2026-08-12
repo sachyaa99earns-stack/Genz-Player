@@ -146,76 +146,77 @@
 
 
 
-    <!-- Vibe Button -->
-    <button id="vibe-btn" style="
-        position: fixed;
-        top: 1.1rem;
-        left: 1.2rem;
-        background: rgba(255,80,80,0.15);
-        border: 1px solid rgba(255,80,80,0.3);
-        color: #fff;
-        border-radius: 999px;
-        padding: 5px 12px;
-        font-family: ui-sans-serif, sans-serif;
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        backdrop-filter: blur(10px);
-        z-index: 50;
-        transition: 0.2s;
-    ">💬 Vibes</button>
-
-    <!-- Vibe Modal -->
-    <div id="vibe-modal" style="
-        display: none;
-        position: fixed;
-        top: 3.5rem;
-        left: 1.2rem;
-        width: 260px;
-        background: rgba(20, 20, 22, 0.85);
-        backdrop-filter: blur(28px) saturate(150%);
-        -webkit-backdrop-filter: blur(28px) saturate(150%);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 16px;
-        padding: 1rem;
-        z-index: 50;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-        flex-direction: column;
-        gap: 0.8rem;
-    ">
+    <!-- Vibe Board (Fixed on right side) -->
+    <style>
+        .vibe-board {
+            display: flex;
+            position: fixed;
+            top: 5.5rem;
+            right: 1.2rem;
+            width: 280px;
+            background: rgba(20, 20, 22, 0.35);
+            backdrop-filter: blur(15px) saturate(150%);
+            -webkit-backdrop-filter: blur(15px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1rem;
+            z-index: 40;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        @media (max-width: 900px) {
+            .vibe-board {
+                display: none; /* Hide on small screens to save space */
+            }
+        }
+    </style>
+    <div class="vibe-board">
+        <h3 style="margin: 0; font-family: 'Baloo 2', sans-serif; font-size: 1.1rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Tell your experience ✨</h3>
         <div id="vibe-list" style="
-            max-height: 180px;
+            max-height: 200px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.6rem;
             scrollbar-width: none;
         ">
             <!-- Live vibes appended here -->
         </div>
-        <div style="display:flex; gap: 0.5rem; margin-top:0.5rem;">
-            <input type="text" id="vibe-input" placeholder="Drop a vibe..." maxlength="40" style="
-                flex: 1;
+        <div style="display:flex; flex-direction: column; gap: 0.5rem; margin-top:0.2rem;">
+            <input type="text" id="vibe-name" placeholder="Your Name..." maxlength="20" style="
                 background: rgba(255,255,255,0.1);
                 border: 1px solid rgba(255,255,255,0.2);
                 color: #fff;
                 padding: 0.4rem 0.8rem;
-                border-radius: 999px;
+                border-radius: 8px;
                 outline: none;
                 font-family: ui-sans-serif, sans-serif;
                 font-size: 0.8rem;
-                min-width: 0;
             ">
+            <textarea id="vibe-exp" placeholder="Share your experience..." rows="2" maxlength="120" style="
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                color: #fff;
+                padding: 0.4rem 0.8rem;
+                border-radius: 8px;
+                outline: none;
+                font-family: ui-sans-serif, sans-serif;
+                font-size: 0.8rem;
+                resize: none;
+            "></textarea>
             <button id="send-vibe" style="
                 background: rgba(255,80,80,0.8);
                 border: none;
                 color: #fff;
-                padding: 0.4rem 0.8rem;
-                border-radius: 999px;
+                padding: 0.5rem;
+                border-radius: 8px;
                 cursor: pointer;
                 font-weight: 600;
                 font-family: ui-sans-serif, sans-serif;
-            ">Send</button>
+                transition: background 0.2s;
+            ">Share</button>
         </div>
     </div>
 
@@ -446,37 +447,32 @@
         });
 
         // Vibe Board Logic
-        const vibeBtn = document.getElementById('vibe-btn');
-        const vibeModal = document.getElementById('vibe-modal');
-        vibeBtn.addEventListener('click', () => {
-            vibeModal.style.display = vibeModal.style.display === 'none' || vibeModal.style.display === '' ? 'flex' : 'none';
-        });
-
-        const vibesRef = db.ref('vibes');
-        const vibeInput = document.getElementById('vibe-input');
+        const vibesRef = db.ref('experiences');
+        const vibeName = document.getElementById('vibe-name');
+        const vibeExp = document.getElementById('vibe-exp');
         const sendVibeBtn = document.getElementById('send-vibe');
         const vibeList = document.getElementById('vibe-list');
 
         function sendVibe() {
-            const text = vibeInput.value.trim();
-            if(text) {
+            const name = vibeName.value.trim();
+            const exp = vibeExp.value.trim();
+            if(name && exp) {
                 vibesRef.push({
-                    text: text,
+                    name: name,
+                    exp: exp,
                     time: firebase.database.ServerValue.TIMESTAMP
                 });
-                vibeInput.value = '';
+                vibeExp.value = ''; // keep name, clear exp
             }
         }
+        
         sendVibeBtn.addEventListener('click', sendVibe);
-        vibeInput.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') sendVibe();
-        });
 
         vibesRef.orderByChild('time').limitToLast(12).on('child_added', (snap) => {
             const vibe = snap.val();
             const div = document.createElement('div');
-            div.style.cssText = "background: rgba(255,255,255,0.08); padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.9); animation: rise 0.3s ease; word-break: break-word;";
-            div.innerText = vibe.text;
+            div.style.cssText = "background: rgba(255,255,255,0.05); padding: 0.6rem; border-radius: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.9); animation: rise 0.3s ease; word-break: break-word;";
+            div.innerHTML = `<strong style="color: rgba(255,80,80,0.9);">${vibe.name}</strong><div style="margin-top: 3px; font-size: 0.85rem; opacity: 0.9;">${vibe.exp}</div>`;
             vibeList.appendChild(div);
             vibeList.scrollTop = vibeList.scrollHeight;
         });
