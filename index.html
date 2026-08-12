@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>GenZ Player — Sachin Codes | Spotify Playlist Vibes | sachincodes.xyz</title>
+    <meta name="description" content="GenZ Player by Sachin — Mast Hinglish vibes, Spotify hits aur aesthetic feel. Sachin ka personal GenZ playlist player. Sunle bhai!" />
+    <meta name="keywords" content="genz player, sachin codes, genz playlist, spotify player, hinglish vibes, desi music player, sachincodes, genZ music, genz gaane" />
+    <meta name="author" content="Sachin" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://sachincodes.xyz" />
+
+    <!-- Open Graph (WhatsApp/Instagram/Twitter preview) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="GenZ Player — Sachin Codes" />
+    <meta property="og:description" content="GenZ Player by Sachin — Mast Hinglish vibes, Spotify hits aur aesthetic feel! Sunle bhai 🎧" />
+    <meta property="og:url" content="https://sachincodes.xyz" />
+    <meta property="og:image" content="https://sachincodes.xyz/ChatGPT Image Aug 12, 2026, 05_04_45 PM.png" />
+    <meta property="og:site_name" content="Sachin Codes" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GenZ Player — Sachin Codes" />
+    <meta name="twitter:description" content="Sachin ka personal GenZ playlist. Mast Hinglish vibes!" />
+    <meta name="twitter:image" content="https://sachincodes.xyz/ChatGPT Image Aug 12, 2026, 05_04_45 PM.png" />
+
+    <!-- Schema.org for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicPlaylist",
+      "name": "GenZ Player by Sachin Codes",
+      "url": "https://sachincodes.xyz",
+      "description": "Sachin ka personal GenZ Spotify playlist with mast Hinglish vibes",
+      "author": {
+        "@type": "Person",
+        "name": "Sachin"
+      }
+    }
+    </script>
+
+    <meta name="theme-color" content="#1a0000" />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Yatra+One&display=swap" rel="stylesheet" />
+    <style>
+        .bg__layer--1 {
+            background-image: url('ChatGPT Image Aug 12, 2026, 05_04_45 PM.png');
+            opacity: 1;
+        }
+        
+        .spotify-glass-player {
+            width: 100%;
+            height: 80px;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid rgba(255, 30, 30, 0.6);
+            /* Stronger Reddish blur */
+            background: rgba(255, 10, 10, 0.4);
+            backdrop-filter: blur(40px) saturate(250%);
+            -webkit-backdrop-filter: blur(40px) saturate(250%);
+            box-shadow: 0 12px 48px rgba(255, 0, 0, 0.4), inset 0 1px 0 rgba(255, 100, 100, 0.6);
+            display: flex;
+            align-items: center;
+        }
+
+        .spotify-glass-player::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 0, 0, 0.3);
+            pointer-events: none;
+            mix-blend-mode: color;
+            z-index: 2;
+        }
+
+        .spotify-glass-player iframe {
+            width: 100%;
+            height: 80px;
+            border: none;
+            background-color: transparent;
+            opacity: 0.85; /* Allows the red container background to bleed into the player */
+            position: relative;
+            z-index: 1;
+        }
+
+        .bumper {
+            margin-bottom: 20px;
+            text-align: center;
+            /* Adjusting font for GenZ quote */
+            font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            transition: opacity 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg" aria-hidden="true">
+        <div class="bg__layer bg__layer--1"></div>
+        <div class="bg__scrim"></div>
+    </div>
+
+    <header class="topbar">
+        <div class="clock" id="clock" aria-label="Current time"></div>
+        <div class="presence" aria-live="polite">
+            <span class="presence__dot" aria-hidden="true"></span>
+            <span class="presence__count" id="listeners">Vibing</span>
+            <span class="presence__label">in the zone</span>
+        </div>
+        <nav class="links">
+        </nav>
+    </header>
+
+
+
+    <main>
+        <div class="dock" style="margin-top: auto;">
+            <p class="bumper">
+                <span id="genz-quote" class="bumper__text">Main character energy activated ✨</span>
+            </p>
+            
+            <div class="spotify-glass-player">
+                <div id="embed-iframe"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Track Info Display — fixed at very bottom center -->
+    <div id="track-info" style="
+        position: fixed;
+        bottom: 1.2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 30;
+        pointer-events: none;
+        width: 90%;
+        max-width: 30rem;
+    ">
+        <p style="margin:0; font-size:0.7rem; color:rgba(255,255,255,0.45); font-family: ui-sans-serif, sans-serif; letter-spacing: 0.08em; text-transform: uppercase;">Now Playing</p>
+        <p id="track-name" style="margin:3px 0 1px; font-size:1rem; font-weight:700; color:rgba(255,255,255,0.9); font-family: 'Baloo 2', sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow: 0 2px 12px rgba(0,0,0,0.8);">—</p>
+        <p id="track-artist" style="margin:0; font-size:0.78rem; color:rgba(255,255,255,0.5); font-family: ui-sans-serif, sans-serif; text-shadow: 0 1px 6px rgba(0,0,0,0.8);">—</p>
+    </div>
+
+    <!-- Coded by Sachin -->
+    <div style="
+        position: fixed;
+        top: 3.5rem;
+        right: 1.2rem;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.35);
+        letter-spacing: 0.04em;
+        pointer-events: none;
+        z-index: 50;
+    ">Coded By Sachin ❤️</div>
+
+    <!-- Spotify IFrame API -->
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+    <script>
+        // GenZ Quotes List in Hinglish
+        const quotes = [
+            "Ekdum main character waali feeling ✨",
+            "Vibe check: Ekdum kadak 💅",
+            "Bhai kya aesthetic vibe hai 🤌",
+            "Dil me rent-free reh raha hai yeh track 🎧",
+            "Bawaal track hai bhidu 🤯",
+            "No cap, yeh gaana fire hai 🔥",
+            "POV: Tu apni life romanticize kar raha hai ☕",
+            "It's giving sukkoon 😌",
+            "Apna villain era shuru 😈",
+            "W song, W vibe 🏆"
+        ];
+
+        let currentQuoteIndex = 0;
+        const quoteElement = document.getElementById('genz-quote');
+
+        // Start with the first quote
+        quoteElement.innerText = quotes[0];
+
+        function changeQuote() {
+            quoteElement.style.opacity = 0;
+            setTimeout(() => {
+                currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+                quoteElement.innerText = quotes[currentQuoteIndex];
+                quoteElement.style.opacity = 1;
+            }, 400); // Wait for fade out
+        }
+
+        // Spotify API setup
+        window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            const element = document.getElementById('embed-iframe');
+            const options = {
+                width: '100%',
+                height: '80',
+                // User's Spotify playlist
+                uri: 'spotify:playlist:0J2Io2I47rfYsdir02OA3i',
+                theme: '0' // Dark theme
+            };
+            
+            const callback = (EmbedController) => {
+                let lastPosition = 0;
+                let lastDuration = 0;
+
+                EmbedController.addListener('playback_update', e => {
+                    if (e.data) {
+                        const currentPosition = e.data.position;
+                        const currentDuration = e.data.duration;
+
+                        // Show track info if available
+                        if (e.data.track) {
+                            const trackName = e.data.track.name || e.data.track.title || null;
+                            const artistName = e.data.track.artists 
+                                ? e.data.track.artists.map(a => a.name).join(', ') 
+                                : (e.data.track.artist || null);
+
+                            if (trackName) {
+                                document.getElementById('track-name').innerText = trackName;
+                                document.getElementById('track-info').style.opacity = 1;
+                            }
+                            if (artistName) {
+                                document.getElementById('track-artist').innerText = artistName;
+                            }
+                        }
+
+                        // Method 1: Duration changed (new song loaded with different length)
+                        const durationChanged = (currentDuration > 0 && lastDuration > 0 && currentDuration !== lastDuration);
+                        
+                        // Method 2: Position jumped back to the start (user skipped to next/prev song)
+                        const songRestarted = (currentPosition < 3000 && lastPosition > 10000);
+
+                        if (durationChanged || songRestarted) {
+                            changeQuote();
+                        }
+
+                        lastPosition = currentPosition;
+                        if (currentDuration > 0) {
+                            lastDuration = currentDuration;
+                        }
+                    }
+                });
+            };
+            
+            IFrameAPI.createController(element, options, callback);
+        };
+
+        // Clock functionality
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('clock').innerText = hours + ':' + minutes + ' ' + ampm;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Horn functionality
+        const hornBtn = document.getElementById('horn');
+        hornBtn.addEventListener('click', () => {
+            hornBtn.classList.add('is-blaring');
+            changeQuote(); // Change quote when horn is pressed manually too
+            
+            setTimeout(() => {
+                hornBtn.classList.remove('is-blaring');
+            }, 720);
+        });
+    </script>
+</body>
+</html>
