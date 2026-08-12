@@ -483,20 +483,14 @@
         const vibeList = document.getElementById('vibe-list');
         const floatLayer = document.getElementById('float-layer');
 
-        // Track used horizontal start positions near left
-        const lanes = [1, 5, 9, 13, 17, 3, 7, 11, 15, 19];
+        // Always start from top-left corner
         let lastLane = -1;
 
         function spawnFloat(name, exp) {
             const el = document.createElement('div');
-            let laneIndex;
-            do { laneIndex = Math.floor(Math.random() * lanes.length); }
-            while (lanes.length > 1 && laneIndex === lastLane);
-            lastLane = laneIndex;
-
-            const left = lanes[laneIndex];
+            const left = Math.random() * 3; // 0-3% from left edge (basically corner)
             const duration = 14 + Math.random() * 8; // 14-22s (slow)
-            const driftX = 40 + Math.random() * 30;  // drift slightly right
+            const driftX = 30 + Math.random() * 20; // slight rightward drift
 
             el.style.cssText = `
                 position: absolute;
