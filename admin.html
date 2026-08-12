@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Sachuu</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0a0a0e;
+            color: #fff;
+            font-family: ui-sans-serif, system-ui, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── Login Screen ── */
+        #login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-box {
+            background: rgba(255,80,80,0.08);
+            border: 1px solid rgba(255,80,80,0.2);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .login-box h1 {
+            font-family: 'Baloo 2', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(255,80,80,0.9);
+            margin-bottom: 0.4rem;
+        }
+
+        .login-box p {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .login-box input {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,80,80,0.2);
+            color: #fff;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            outline: none;
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: rgba(255,80,80,0.8);
+            border: none;
+            color: #fff;
+            padding: 0.8rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover { background: rgba(255,80,80,1); }
+
+        #login-error {
+            color: rgba(255,80,80,0.9);
+            font-size: 0.82rem;
+            margin-top: 0.8rem;
+            display: none;
+        }
+
+        /* ── Admin Panel ── */
+        #admin-panel {
+            display: none;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .admin-header h1 {
+            font-family: 'Baloo 2', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .admin-header span {
+            color: rgba(255,80,80,0.9);
+        }
+
+        .stats-bar {
+            background: rgba(255,80,80,0.08);
+            border: 1px solid rgba(255,80,80,0.2);
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-bar strong {
+            color: rgba(255,80,80,0.9);
+        }
+
+        .comment-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .comment-card:hover {
+            border-color: rgba(255,80,80,0.3);
+            background: rgba(255,80,80,0.05);
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-name {
+            font-weight: 700;
+            color: rgba(255,80,80,0.9);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-text {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.4;
+        }
+
+        .comment-time {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.3);
+            margin-top: 0.4rem;
+        }
+
+        .delete-btn {
+            background: rgba(255,60,60,0.15);
+            border: 1px solid rgba(255,60,60,0.3);
+            color: rgba(255,100,100,0.9);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: background 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255,60,60,0.35);
+        }
+
+        #empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: rgba(255,255,255,0.3);
+            display: none;
+        }
+
+        #empty-state div { font-size: 3rem; margin-bottom: 1rem; }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover { background: rgba(255,255,255,0.12); }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>🔐 Admin</h1>
+            <p>Sachuu's secret panel — enter password</p>
+            <input type="password" id="password-input" placeholder="Password" autofocus>
+            <button class="login-btn" id="login-btn">Enter</button>
+            <div id="login-error">❌ Wrong password bhai!</div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel">
+        <div class="admin-header">
+            <h1>🎵 Vibes Panel <span>by Sachuu</span></h1>
+            <a href="/" class="back-btn">← Back to Player</a>
+        </div>
+
+        <div class="stats-bar">
+            Total experiences: <strong id="total-count">0</strong>
+        </div>
+
+        <div id="comments-list">
+            <!-- Cards appended here -->
+        </div>
+
+        <div id="empty-state">
+            <div>🌵</div>
+            <p>No vibes yet. Be the first!</p>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+        // ── Password Check ──
+        const ADMIN_PASSWORD = "sachuu123"; // Change this to your password!
+
+        const loginBtn = document.getElementById('login-btn');
+        const passwordInput = document.getElementById('password-input');
+        const loginError = document.getElementById('login-error');
+
+        function tryLogin() {
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                loadVibes();
+            } else {
+                loginError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        loginBtn.addEventListener('click', tryLogin);
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') tryLogin();
+        });
+
+        // ── Firebase Setup ──
+        const firebaseConfig = {
+            databaseURL: "https://genz-player-s-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const vibesRef = db.ref('experiences');
+
+        const commentsList = document.getElementById('comments-list');
+        const totalCount = document.getElementById('total-count');
+        const emptyState = document.getElementById('empty-state');
+
+        let cardCount = 0;
+
+        function loadVibes() {
+            vibesRef.orderByChild('time').on('child_added', (snap) => {
+                cardCount++;
+                totalCount.innerText = cardCount;
+                emptyState.style.display = 'none';
+
+                const vibe = snap.val();
+                const key = snap.key;
+                const date = vibe.time ? new Date(vibe.time).toLocaleString('en-IN', {
+                    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                }) : '';
+
+                const card = document.createElement('div');
+                card.className = 'comment-card';
+                card.id = 'card-' + key;
+                card.innerHTML = `
+                    <div class="comment-content">
+                        <div class="comment-name">👤 ${vibe.name || 'Anonymous'}</div>
+                        <div class="comment-text">${vibe.exp || ''}</div>
+                        <div class="comment-time">${date}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteVibe('${key}')">🗑 Delete</button>
+                `;
+                commentsList.prepend(card); // newest first
+            });
+
+            vibesRef.on('child_removed', (snap) => {
+                cardCount = Math.max(0, cardCount - 1);
+                totalCount.innerText = cardCount;
+                const card = document.getElementById('card-' + snap.key);
+                if (card) card.remove();
+                if (cardCount === 0) emptyState.style.display = 'block';
+            });
+        }
+
+        function deleteVibe(key) {
+            if (confirm('Delete this vibe?')) {
+                vibesRef.child(key).remove();
+            }
+        }
+    </script>
+</body>
+</html>
