@@ -245,7 +245,6 @@ main {
   letter-spacing: 0.01em;
   font-variant-numeric: tabular-nums;
   color: rgba(255, 80, 80, 0.5);
-  margin-left: -2vw;
 }
 
 .presence {
