@@ -245,6 +245,7 @@ main {
   letter-spacing: 0.01em;
   font-variant-numeric: tabular-nums;
   color: rgba(255, 80, 80, 0.5);
+  margin-left: -2vw;
 }
 
 .presence {
@@ -258,6 +259,13 @@ main {
   letter-spacing: 0.01em;
   white-space: nowrap;
   color: rgba(255, 255, 255, 0.92);
+}
+
+@media (max-width: 768px) {
+  .presence {
+    font-size: 0.7rem;
+    gap: 0.3rem;
+  }
 }
 
 .presence__dot {
