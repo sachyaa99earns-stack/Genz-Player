@@ -543,18 +543,27 @@
         vibesRef.orderByChild('time').limitToLast(20).on('child_added', (snap) => {
             const vibe = snap.val();
             if (!initialLoad) {
-                // New comment — spawn floating text
                 spawnFloat(vibe.name || 'Anon', vibe.exp || '');
             }
         });
 
-        // Replay last 5 comments as floating text after load
-        vibesRef.orderByChild('time').limitToLast(5).once('value', (snap) => {
-            const items = [];
-            snap.forEach(child => items.push(child.val()));
-            items.reverse().forEach((vibe, i) => {
-                setTimeout(() => spawnFloat(vibe.name || 'Anon', vibe.exp || ''), i * 2500);
-            });
+        // Load all comments and loop them continuously — all at once
+        let allVibes = [];
+        let loopInterval = null;
+
+        function startLoop() {
+            if (allVibes.length === 0) return;
+            // Spawn all at once
+            allVibes.forEach(v => spawnFloat(v.name || 'Anon', v.exp || ''));
+            // Repeat after 18s (matches float duration)
+            loopInterval = setInterval(() => {
+                allVibes.forEach(v => spawnFloat(v.name || 'Anon', v.exp || ''));
+            }, 18000);
+        }
+
+        vibesRef.orderByChild('time').limitToLast(20).once('value', (snap) => {
+            snap.forEach(child => allVibes.push(child.val()));
+            startLoop();
         });
     </script>
 </body>
