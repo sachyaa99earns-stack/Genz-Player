@@ -146,6 +146,79 @@
 
 
 
+    <!-- Vibe Button -->
+    <button id="vibe-btn" style="
+        position: fixed;
+        top: 1.1rem;
+        left: 1.2rem;
+        background: rgba(255,80,80,0.15);
+        border: 1px solid rgba(255,80,80,0.3);
+        color: #fff;
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-family: ui-sans-serif, sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        z-index: 50;
+        transition: 0.2s;
+    ">💬 Vibes</button>
+
+    <!-- Vibe Modal -->
+    <div id="vibe-modal" style="
+        display: none;
+        position: fixed;
+        top: 3.5rem;
+        left: 1.2rem;
+        width: 260px;
+        background: rgba(20, 20, 22, 0.85);
+        backdrop-filter: blur(28px) saturate(150%);
+        -webkit-backdrop-filter: blur(28px) saturate(150%);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        padding: 1rem;
+        z-index: 50;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        flex-direction: column;
+        gap: 0.8rem;
+    ">
+        <div id="vibe-list" style="
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            scrollbar-width: none;
+        ">
+            <!-- Live vibes appended here -->
+        </div>
+        <div style="display:flex; gap: 0.5rem; margin-top:0.5rem;">
+            <input type="text" id="vibe-input" placeholder="Drop a vibe..." maxlength="40" style="
+                flex: 1;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                color: #fff;
+                padding: 0.4rem 0.8rem;
+                border-radius: 999px;
+                outline: none;
+                font-family: ui-sans-serif, sans-serif;
+                font-size: 0.8rem;
+                min-width: 0;
+            ">
+            <button id="send-vibe" style="
+                background: rgba(255,80,80,0.8);
+                border: none;
+                color: #fff;
+                padding: 0.4rem 0.8rem;
+                border-radius: 999px;
+                cursor: pointer;
+                font-weight: 600;
+                font-family: ui-sans-serif, sans-serif;
+            ">Send</button>
+        </div>
+    </div>
+
     <header class="topbar">
         <div class="clock" id="clock" aria-label="Current time"></div>
         <div class="presence" aria-live="polite">
@@ -168,6 +241,23 @@
             <div class="spotify-glass-player">
                 <div id="embed-iframe"></div>
             </div>
+
+            <!-- Login Hint -->
+            <a href="https://accounts.spotify.com/en/login?continue=https://open.spotify.com/" target="_blank" id="spotify-login-hint" style="
+                display: block;
+                margin: 12px auto 0;
+                font-size: 0.75rem;
+                color: rgba(255,255,255,0.8);
+                text-align: center;
+                text-decoration: none;
+                background: rgba(255,80,80,0.15);
+                padding: 6px 14px;
+                border-radius: 999px;
+                border: 1px solid rgba(255,80,80,0.3);
+                width: fit-content;
+                transition: opacity 0.3s;
+                font-family: ui-sans-serif, sans-serif;
+            ">🎧 Only hearing 30s? Login to Spotify for full vibe!</a>
         </div>
     </main>
 
@@ -255,6 +345,12 @@
                     if (e.data) {
                         const currentPosition = e.data.position;
                         const currentDuration = e.data.duration;
+
+                        // Hide login hint if full track is playing (>31s)
+                        if (currentDuration > 31000) {
+                            const loginHint = document.getElementById('spotify-login-hint');
+                            if(loginHint) loginHint.style.opacity = '0';
+                        }
 
                         // Show track info if available
                         if (e.data.track) {
@@ -347,6 +443,42 @@
         db.ref('presence').on('value', (snap) => {
             const count = snap.numChildren();
             document.getElementById('listeners').innerText = count;
+        });
+
+        // Vibe Board Logic
+        const vibeBtn = document.getElementById('vibe-btn');
+        const vibeModal = document.getElementById('vibe-modal');
+        vibeBtn.addEventListener('click', () => {
+            vibeModal.style.display = vibeModal.style.display === 'none' || vibeModal.style.display === '' ? 'flex' : 'none';
+        });
+
+        const vibesRef = db.ref('vibes');
+        const vibeInput = document.getElementById('vibe-input');
+        const sendVibeBtn = document.getElementById('send-vibe');
+        const vibeList = document.getElementById('vibe-list');
+
+        function sendVibe() {
+            const text = vibeInput.value.trim();
+            if(text) {
+                vibesRef.push({
+                    text: text,
+                    time: firebase.database.ServerValue.TIMESTAMP
+                });
+                vibeInput.value = '';
+            }
+        }
+        sendVibeBtn.addEventListener('click', sendVibe);
+        vibeInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') sendVibe();
+        });
+
+        vibesRef.orderByChild('time').limitToLast(12).on('child_added', (snap) => {
+            const vibe = snap.val();
+            const div = document.createElement('div');
+            div.style.cssText = "background: rgba(255,255,255,0.08); padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.9); animation: rise 0.3s ease; word-break: break-word;";
+            div.innerText = vibe.text;
+            vibeList.appendChild(div);
+            vibeList.scrollTop = vibeList.scrollHeight;
         });
     </script>
 </body>
