@@ -483,39 +483,40 @@
         const vibeList = document.getElementById('vibe-list');
         const floatLayer = document.getElementById('float-layer');
 
-        // Track used vertical lanes to avoid overlapping
-        const lanes = [10, 18, 27, 36, 45, 54, 63, 72, 81];
+        // Track used horizontal start positions near left
+        const lanes = [1, 5, 9, 13, 17, 3, 7, 11, 15, 19];
         let lastLane = -1;
 
         function spawnFloat(name, exp) {
             const el = document.createElement('div');
-            // Pick a lane that's different from the last one
             let laneIndex;
             do { laneIndex = Math.floor(Math.random() * lanes.length); }
             while (lanes.length > 1 && laneIndex === lastLane);
             lastLane = laneIndex;
 
-            const top = lanes[laneIndex] + (Math.random() * 4 - 2); // slight jitter
-            const duration = 10 + Math.random() * 6; // 10-16s
+            const left = lanes[laneIndex];
+            const duration = 14 + Math.random() * 8; // 14-22s (slow)
+            const driftX = 40 + Math.random() * 30;  // drift slightly right
 
             el.style.cssText = `
                 position: absolute;
-                top: ${top}%;
-                left: 105%;
+                top: -5%;
+                left: ${left}%;
                 white-space: nowrap;
                 font-family: ui-sans-serif, sans-serif;
                 font-size: 0.82rem;
                 color: rgba(255,255,255,0.7);
                 text-shadow: 0 1px 6px rgba(0,0,0,0.8);
                 will-change: transform;
+                pointer-events: none;
             `;
             el.innerHTML = `<span style="color:rgba(255,120,120,0.9);font-weight:700;">${name}</span>: ${exp}`;
             floatLayer.appendChild(el);
 
-            // Animate right→left using WAAPI
+            // Animate: top-left → bottom with slight rightward drift
             const anim = el.animate([
-                { transform: 'translateX(0)' },
-                { transform: `translateX(calc(-105vw - 100%))` }
+                { transform: 'translate(0, 0)', opacity: 0.8 },
+                { transform: `translate(${driftX}px, 108vh)`, opacity: 0 }
             ], {
                 duration: duration * 1000,
                 easing: 'linear',
