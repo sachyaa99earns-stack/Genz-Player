@@ -147,8 +147,8 @@
         <div class="clock" id="clock" aria-label="Current time"></div>
         <div class="presence" aria-live="polite">
             <span class="presence__dot" aria-hidden="true"></span>
-            <span class="presence__count" id="listeners">Vibing</span>
-            <span class="presence__label">in the zone</span>
+            <span class="presence__count" id="listeners">1</span>
+            <span class="presence__label">vibing in the zone</span>
         </div>
         <nav class="links">
         </nav>
@@ -305,13 +305,45 @@
 
         // Horn functionality
         const hornBtn = document.getElementById('horn');
-        hornBtn.addEventListener('click', () => {
-            hornBtn.classList.add('is-blaring');
-            changeQuote(); // Change quote when horn is pressed manually too
-            
-            setTimeout(() => {
-                hornBtn.classList.remove('is-blaring');
-            }, 720);
+        if (hornBtn) {
+            hornBtn.addEventListener('click', () => {
+                hornBtn.classList.add('is-blaring');
+                changeQuote();
+                setTimeout(() => {
+                    hornBtn.classList.remove('is-blaring');
+                }, 720);
+            });
+        }
+    </script>
+
+    <!-- Firebase Realtime Presence Tracking -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            databaseURL: "https://genz-player-s-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Generate a unique ID for this session
+        const userId = Math.random().toString(36).substr(2, 9);
+        const userRef = db.ref('presence/' + userId);
+
+        // Add user to presence when connected
+        db.ref('.info/connected').on('value', (snap) => {
+            if (snap.val() === true) {
+                // Remove on disconnect
+                userRef.onDisconnect().remove();
+                // Set presence
+                userRef.set(true);
+            }
+        });
+
+        // Listen to total count and update display
+        db.ref('presence').on('value', (snap) => {
+            const count = snap.numChildren();
+            document.getElementById('listeners').innerText = count;
         });
     </script>
 </body>
