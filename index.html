@@ -60,20 +60,6 @@
                 transform: scale(1.15);
             }
         }
-
-        /* Force landscape on mobile portrait mode */
-        @media screen and (max-width: 768px) and (orientation: portrait) {
-            html {
-                transform: rotate(90deg);
-                transform-origin: left top;
-                width: 100vh;
-                height: 100vw;
-                overflow-x: hidden;
-                position: absolute;
-                top: 100%;
-                left: 0;
-            }
-        }
         
         .spotify-glass-player {
             width: 100%;
