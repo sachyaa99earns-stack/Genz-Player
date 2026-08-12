@@ -234,6 +234,15 @@
         </div>
     </div>
 
+    <!-- Floating Comments Layer -->
+    <div id="float-layer" style="
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 30;
+        overflow: hidden;
+    "></div>
+
     <header class="topbar">
         <div class="clock" id="clock" aria-label="Current time"></div>
         <div class="presence" aria-live="polite">
@@ -472,6 +481,52 @@
         const vibeExp = document.getElementById('vibe-exp');
         const sendVibeBtn = document.getElementById('send-vibe');
         const vibeList = document.getElementById('vibe-list');
+        const floatLayer = document.getElementById('float-layer');
+
+        // Track used vertical lanes to avoid overlapping
+        const lanes = [10, 18, 27, 36, 45, 54, 63, 72, 81];
+        let lastLane = -1;
+
+        function spawnFloat(name, exp) {
+            const el = document.createElement('div');
+            // Pick a lane that's different from the last one
+            let laneIndex;
+            do { laneIndex = Math.floor(Math.random() * lanes.length); }
+            while (lanes.length > 1 && laneIndex === lastLane);
+            lastLane = laneIndex;
+
+            const top = lanes[laneIndex] + (Math.random() * 4 - 2); // slight jitter
+            const duration = 10 + Math.random() * 6; // 10-16s
+
+            el.style.cssText = `
+                position: absolute;
+                top: ${top}%;
+                left: 105%;
+                white-space: nowrap;
+                font-family: ui-sans-serif, sans-serif;
+                font-size: 0.82rem;
+                color: rgba(255,255,255,0.7);
+                text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+                will-change: transform;
+            `;
+            el.innerHTML = `<span style="color:rgba(255,120,120,0.9);font-weight:700;">${name}</span>: ${exp}`;
+            floatLayer.appendChild(el);
+
+            // Animate right→left using WAAPI
+            const anim = el.animate([
+                { transform: 'translateX(0)' },
+                { transform: `translateX(calc(-105vw - 100%))` }
+            ], {
+                duration: duration * 1000,
+                easing: 'linear',
+                fill: 'forwards'
+            });
+            anim.onfinish = () => el.remove();
+        }
+
+        // Only spawn floats for NEW entries (after page load)
+        let initialLoad = true;
+        setTimeout(() => { initialLoad = false; }, 3000);
 
         function sendVibe() {
             const name = vibeName.value.trim();
@@ -483,18 +538,28 @@
                     time: firebase.database.ServerValue.TIMESTAMP
                 });
                 vibeExp.value = ''; // keep name, clear exp
+                // Close board after sending
+                vibeBoard.style.display = 'none';
             }
         }
         
         sendVibeBtn.addEventListener('click', sendVibe);
 
-        vibesRef.orderByChild('time').limitToLast(12).on('child_added', (snap) => {
+        vibesRef.orderByChild('time').limitToLast(20).on('child_added', (snap) => {
             const vibe = snap.val();
-            const div = document.createElement('div');
-            div.style.cssText = "background: rgba(255,80,80,0.1); padding: 0.6rem; border-radius: 8px; font-size: 0.78rem; color: rgba(255,255,255,0.9); animation: rise 0.3s ease; word-break: break-word;";
-            div.innerHTML = `<strong style="color: rgba(255,80,80,0.9);">${vibe.name}</strong><div style="margin-top: 3px; font-size: 0.85rem; opacity: 0.9;">${vibe.exp}</div>`;
-            vibeList.appendChild(div);
-            vibeList.scrollTop = vibeList.scrollHeight;
+            if (!initialLoad) {
+                // New comment — spawn floating text
+                spawnFloat(vibe.name || 'Anon', vibe.exp || '');
+            }
+        });
+
+        // Replay last 5 comments as floating text after load
+        vibesRef.orderByChild('time').limitToLast(5).once('value', (snap) => {
+            const items = [];
+            snap.forEach(child => items.push(child.val()));
+            items.reverse().forEach((vibe, i) => {
+                setTimeout(() => spawnFloat(vibe.name || 'Anon', vibe.exp || ''), i * 2500);
+            });
         });
     </script>
 </body>
