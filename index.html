@@ -53,11 +53,38 @@
             background-position: center center;
         }
 
-        /* Mobile — focus on center of the image */
-        @media (max-width: 768px) {
+        /* Mobile portrait — use portrait image as background */
+        @media (max-width: 768px) and (orientation: portrait) {
+            .bg__layer--1 {
+                background-image: url('potrait.png') !important;
+                background-position: center center;
+                transform: scale(1.03);
+            }
+
+            /* Better mobile UI */
+            .topbar {
+                top: 0.6rem;
+            }
+
+            .dock {
+                max-width: 95vw;
+                margin-bottom: 2rem;
+            }
+
+            .spotify-glass-player {
+                height: 80px;
+            }
+
+            #track-info {
+                bottom: 0.5rem;
+            }
+        }
+
+        /* Mobile landscape — keep original image */
+        @media (max-width: 900px) and (orientation: landscape) {
             .bg__layer--1 {
                 background-position: center center;
-                transform: scale(1.15);
+                transform: scale(1.03);
             }
         }
         
