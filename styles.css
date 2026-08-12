@@ -958,9 +958,8 @@ main {
   :root {
     --logo-top: 16vh;
   }
-
   .presence__label {
-    display: none;
+    display: inline;
   }
 
   /* Keep the label on phones — it's the joke, and a bare icon reads as a
